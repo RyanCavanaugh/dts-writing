@@ -47,7 +47,7 @@ For example, if we have the declaration `let x: A.B.C`,
 
 This distinction is subtle and important -- here, `A.B` is not necessarily a type or a value.
 
-### Combinations
+## Simple Combinations: One name, multiple meanings
 
 Given a name `A`, we might find up to three different meanings for `A`: a type, a value or a namespace.
 How the name is interpreted depends on the context in which it is used.
@@ -58,7 +58,7 @@ These meanings might end up referring to entirely different declarations!
 This may seem confusing, but it's actually very convenient as long as we don't excessively overload things.
 Let's look at some useful aspects of this combining behavior.
 
-#### Built-in Combinations
+### Built-in Combinations
 
 Astute readers will notice that, for example, `class` appeared in both the *type* and *value* lists.
 The declaration `class C { }` creates two things:
@@ -66,7 +66,7 @@ The declaration `class C { }` creates two things:
   and a *value* `C` which refers to the constructor function of the class.
 Enum declarations behave similarly.
 
-#### User Combinations
+### User Combinations
 
 Let's say we wrote a module file `foo.d.ts`:
 ```ts
@@ -99,5 +99,111 @@ console.log(x.count);
 Again, we've used `Bar` as both a type and a value here.
 Note that we didn't have to declare the `Bar` value as being of the `Bar` type -- they're independent.
 
-#### Combinations of the Same Kind
+## Advanced Combinations
 
+Some kinds of declarations can be combined across multiple declarations.
+For example, `class C { }` and `interface C { }` can co-exist and both contribute properties to the `C` types.
+
+This is legal as long as it does not create a conflict.
+A general rule of thumb is that values always conflict with other values of the same name unless they are declared as `namespace`s,
+  types will conflict if they are declared with a type alias declaration (`type s = string`),
+  and namespaces never conflict.
+
+Let's see how this can be used.
+
+### Adding using an `interface`
+
+We can add additional members to an `interface` with another `interface` declaration:
+```ts
+interface Foo {
+  x: number;
+}
+// ... elsewhere ...
+interface Foo {
+  y: number;
+}
+let a: Foo = ...;
+console.log(a.x + a.y); // OK
+```
+This also works with classes:
+```ts
+class Foo {
+  x: number;
+}
+// ... elsewhere ...
+interface Foo {
+  y: number;
+}
+let a: Foo = ...;
+console.log(a.x + a.y); // OK
+```
+Note that we cannot add to type aliases (`type s = string;`) using an interface.
+
+### Adding using a `namespace`
+
+A `namespace` declaration can be used to add new types, values, and namespaces in any way which does not create a conflict.
+
+For example, we can add a static member to a class:
+```ts
+class C {
+}
+// ... elsewhere ...
+namespace C {
+  export let x: number;
+}
+let y = C.x; // OK
+```
+Note that in this example, we added a value to the *static* side of `C` (its constructor function).
+This is because we added a *value*, and the container for all values is another value
+  (types are contained by namespaces, and namespaces are contained by other namespaces).
+
+We could also add a namespaced type to a class:
+```ts
+class C {
+}
+// ... elsewhere ...
+namespace C {
+  export interface D { }
+}
+let y: C.D; // OK
+```
+In this example, there wasn't a namespace `C` until we wrote the `namespace` declaration for it.
+The meaning `C` as a namespace doesn't conflict with the value or type meanings of `C` created by the class.
+
+Finally, we could perform many different merges using `namespace` declarations.
+This isn't a particularly realistic example, but shows all sorts of interesting behavior:
+```ts
+namespace X {
+  export interface Y { }
+  export class Z { }
+}
+
+// ... elsewhere ...
+namespace X {
+  export var Y: number;
+  export namespace Z {
+    export class C { }
+  }
+}
+type X = string;
+```
+In this example, the first block creates the following name meanings:
+ * A value `X` (because the `namespace` declaration contains a value, `Z`)
+ * A namespace `X` (because the `namespace` declaration contains a type, `Y`)
+ * A type `Y` in the `X` namespace
+ * A type `Z` in the `X` namespace (the instance shape of the class)
+ * A value `Z` that is a property of the `X` value (the constructor function of the class)
+
+The second  block creates the following name meanings:
+ * A value `Y` (of type `number`) that is a property of the `X` value
+ * A namespace `Z`
+ * A value `Z` that is a property of the `X` value
+ * A type `C` in the `X.Z` namespace
+ * A value `C` that is a property of the `X.Z` value
+ * A type `X`
+
+## Using with `export =` or `import`
+
+An important rule is that `export` and `import` declarations export or import *all meanings* of their targets.
+
+TODO: Write more on that.
