@@ -6,6 +6,11 @@ There are many ways of offering a library for consumption in JavaScript,
 This guide covers how to identify common library patterns,
   and how to write definition files which correspond to that pattern.
 
+Each type of major library structuring pattern has a corresponding file in the `templates` directory.
+You can start with these templates to help you get going faster.
+
+
+
 # Identifying Kinds of Libraries
 
 First, we'll review the kinds of libraries TypeScript definition files can represent.
@@ -72,6 +77,12 @@ Because it's usually easy to turn a global library into a UMD library,
 However, libraries that are small and require the DOM (or have *no* dependencies) may still be global.
 
 *TODO: Add some examples anyway*
+
+### Template
+
+The template file `global.d.ts` defines an example library `myLib`.
+Be sure to read the "Preventing Name Conflicts" footnote.
+
 
 ## *module*
 
@@ -151,66 +162,112 @@ If you see tests for `typeof require` or `typeof define` in the code of a librar
   especially at the top of the file,
   it's almost always a UMD library.
 
+Documentation for UMD libraries will also often demonstrate a "Using in nodejs" example showing `require`
+  and a "Using in browser" example showing using a `<script>` tag to load the script.
+
 ### Examples of UMD libraries
 
  * moment
  * TODO: More!
 
-## *Global-modifying Libraries*
+### Template
 
-A *Global-modifying Libraries* alter existing values in the global scope when the are `import`ed.
-For example, there might exist a library which adds new members to `String.prototype` when imported.
-This pattern is somewhat dangerous due to the possibility of runtime conflicts,
-  but we can still write a definition file for it.
+There are three templates available for modules,
+  `module.d.ts`, `module-class.d.ts` and `module-callable.d.ts`.
+
+Use `module-callable.d.ts` if your module can be *called* like a function:
+```ts
+var x = require('foo');
+// Note: calling 'x' as a function
+var y = x(42);
+```
+Be sure to read the footnote "The Impact of ES6 on Module Call Signatures"
+
+Use `module-class.d.ts` if your module can be *constructed* using `new`:
+```ts
+var x = require('bar');
+// Note: using 'new' operator on the imported variable
+var y = new x('hello');
+```
+The same footnote applies to these modules.
+
+If your module is not callable or constructable, use the `module.d.ts` file.
 
 ## *Module Plugin* or *UMD Plugin*
 
 A *module plugin* changes the shape of another module (either UMD or module).
 For example, `moment-range` adds a new `range` method to the `moment` object.
 
-### Sidebar: The Impact of ES6 on Module Plugins
+For the purposes of writing a definition file, you'll write the same code
+  whether the module being changed is a plain module or UMD module.
 
-Some plugins add or modify top-level exports on existing modules.
-While this is legal in CommonJS and other loaders,
-  ES6 modules are considered immutable and this pattern will not be possible.
-Because TypeScript is loader-agnostic, there is no compile-time enforcement of this policy,
-  but developers intending to transition to an ES6 module loader should be aware of this.
+### Template
+
+Use the `module-plugin.d.ts` template.
 
 ### *Global Plugin*
 
 A *global plugin* is global code that changes the shape of some global.
-In general these are written identically as normal global code,
-  so this document won't call them out specifically unless needed.
+As with *global-modifying modules*, these raise the possibility of runtime conflict.
 
-## Structuring Patterns for Library Shapes
+For example, some libraries add new functions to `Array.prototype` or `String.prototype`.
 
-## Structuring Patterns for Types
+### Identifying global plugins
 
-Additionally, you'll need to write your definition file slightly differently depending on what kind of object is being represented.
+Global plugins are generally easy to identify from their documentation.
 
-### TODO: Write a ton of these...
-
-#### Sidebar: The Impact of ES6 on Top-level Call Signatures
-
-Many popular libraries, such as `express`, expose themselves as a callable function when imported.
-For example, the typical `express` usage looks like this:
+You'll see examples that look like this:
 ```ts
-import exp = require('express');
-var app = exp();
-```
-In ES6 module loaders, the top-level object (here imported as `exp`) can only have properties;
-  the top-level module object is *never* callable.
-The most common solution here is to define the `default` export as the callable object;
-  some module loader shims will automatically detect this situation and replace the top-level
-  object with the `default` export.
+var x = 'hello, world';
+// Creates new methods on built-in types
+console.log(x.startsWithHello());
 
-## Dependencies
+var y = [1, 2, 3];
+// Creates new methods on built-in types
+console.log(y.reverseAndSort());
+```
+
+### Template
+
+Use the `global-plugin.d.ts` template.
+
+## *Global-modifying Modules*
+
+A *Global-modifying Module* alters existing values in the global scope when they are `import`ed.
+For example, there might exist a library which adds new members to `String.prototype` when imported.
+This pattern is somewhat dangerous due to the possibility of runtime conflicts,
+  but we can still write a definition file for it.
+
+### Identifying global-modifying modules
+
+Global-modifying modules are generally easy to identify from their documentation.
+In general, they're similar to global plugins, but need a `require` call to activate their effects.
+
+You might see documentation like this:
+```ts
+// 'require' call that doesn't use its return value
+var unused = require('magic-string-time');
+/* or */
+require('magic-string-time');
+
+var x = 'hello, world';
+// Creates new methods on built-in types
+console.log(x.startsWithHello());
+
+var y = [1, 2, 3];
+// Creates new methods on built-in types
+console.log(y.reverseAndSort());
+```
+
+### Template
+
+Use the `global-modifying-module.d.ts` template.
+
+# Consuming Dependencies
 
 There are several kinds of dependencies you might have.
 
-### Module dependencies
-
-### Dependencies on Global Libraries
+## Dependencies on Global Libraries
 
 If your library depends on a global library, use a `/// <reference types=` directive:
 ```ts
@@ -220,7 +277,7 @@ function getThing(): someLib.thing;
 ```
 This syntax is the same regardless if your library is global, a module, or UMD
 
-### Depenencies on Modules
+## Dependencies on Modules
 
 If your library depends on a module, use an `import` statement:
 ```ts
@@ -229,9 +286,9 @@ import * as moment from 'moment';
 function getThing(): moment;
 ```
 
-### Dependencies on UMD libraries
+## Dependencies on UMD libraries
 
-#### From a Global Library
+### From a Global Library
 
 If your global library depends on a UMD module, use a `/// <reference types` directive:
 ```ts
@@ -246,8 +303,52 @@ If your module or UMD library depends on a UMD library, use an `import` statemen
 ```ts
 import * as someLib from 'someLib';
 ```
-Do *not* use a `/// <reference` directive to declare a UMD dependency unless your library is global!
+Do *not* use a `/// <reference` directive to declare a dependency to a UMD library!
 
-## Discouraged Patterns
 
-TODO: Write about bad things
+# Footnotes
+
+## Preventing Name Conflicts
+
+Note that it's possible to define many types in the global scope when writing a global definition file.
+We strongly discourage this as it leads to possible unresolvable name conflicts
+  when many definition files are in a project.
+
+A simple rule to follow is to only declare types *namespaced* by whatever
+  global variable the library defines.
+For example, if the library defines the global value 'cats', you should write
+```ts
+declare namespace cats {
+  interface KittySettings { }
+}
+```
+But *not*
+```
+// at top-level
+interface CatsKittySettings { }
+```
+
+This guidance also ensures that the library can be transitioned to UMD without breaking definition file users.
+
+## The Impact of ES6 on Module Plugins
+
+Some plugins add or modify top-level exports on existing modules.
+While this is legal in CommonJS and other loaders,
+  ES6 modules are considered immutable and this pattern will not be possible.
+Because TypeScript is loader-agnostic, there is no compile-time enforcement of this policy,
+  but developers intending to transition to an ES6 module loader should be aware of this.
+
+## The Impact of ES6 on Module Call Signatures
+
+Many popular libraries, such as `express`, expose themselves as a callable function when imported.
+For example, the typical `express` usage looks like this:
+```ts
+import exp = require('express');
+var app = exp();
+```
+In ES6 module loaders, the top-level object (here imported as `exp`) can only have properties;
+  the top-level module object is *never* callable.
+The most common solution here is to define the `default` export as the callable object;
+  some module loader shims will automatically detect this situation and replace the top-level
+  object with the `default` export.
+

@@ -4,11 +4,22 @@
 
 ### `Number`, `String`, `Boolean`, and `Object`
 
-*Don't* ever use the types `Number`, `String`, `Boolean`, or `Object`. These types refer to non-primitive boxed objects that are almost never used appropriately in JavaScript code.
+*Don't* ever use the types `Number`, `String`, `Boolean`, or `Object`.
+These types refer to non-primitive boxed objects that are almost never used appropriately in JavaScript code.
+```ts
+/* WRONG */
+function reverse(s: String): String;
+```
 
 *Do* use the types `number`, `string`, and `boolean`.
+```ts
+/* OK */
+function reverse(s: string): string;
+```
 
-If you're tempted to use the type `Object`, consider using `any` instead. All types are compatible with `Object`. <!--(Revisit if/when #1809 is implemented)-->
+If you're tempted to use the type `Object`, consider using `any` instead.
+There is currently no way in TypeScript to specify an object that is "not a primitive".
+<!--(Revisit if/when #1809 is implemented)-->
 
 ## Generics
 
@@ -21,15 +32,19 @@ TODO: More
 
 ### Return Types of Callbacks
 
-*Don't* use the return type `any` for callbacks whose value you will discard:
+<!-- TODO: Reword; these examples make no sense in the context of a declaration file -->
+
+*Don't* use the return type `any` for callbacks whose value will be ignored:
 ```ts
+/* WRONG */
 function fn(x: () => any) {
 	x();
 }
 ```
 
-*Do* use the return type `void` for callbacks whose value you will discard:
+*Do* use the return type `void` for callbacks whose value will be ignored:
 ```ts
+/* OK */
 function fn(x: () => void) {
 	x();
 }
@@ -47,14 +62,19 @@ function fn(x: () => void) {
 
 *Don't* use optional parameters in callbacks unless you really mean it:
 ```ts
+/* WRONG */
 interface Fetcher {
 	getObject(done: (data: any, elapsedTime?: number) => void): void;
 }
 ```
-This has a very specific meaning: the `done` callback might be invoked with 1 argument or might be invoked with 2 arguments. The author probably intended to say that the callback might not care about the `elapsedTime` parameter, but there's no need to make the parameter optional to accomplish this -- it's always legal to provide a callback that accepts fewer arguments.
+This has a very specific meaning: the `done` callback might be invoked with 1 argument or might be invoked with 2 arguments.
+The author probably intended to say that the callback might not care about the `elapsedTime` parameter,
+  but there's no need to make the parameter optional to accomplish this --
+  it's always legal to provide a callback that accepts fewer arguments.
 
 *Do* write callback parameters as non-optional:
 ```ts
+/* OK */
 interface Fetcher {
 	getObject(done: (data: any, elapsedTime: number) => void): void;
 }
@@ -64,17 +84,19 @@ interface Fetcher {
 
 *Don't* write separate overloads that differ only on callback arity:
 ```ts
+/* WRONG */
 declare function beforeAll(action: () => void, timeout?: number): void;
 declare function beforeAll(action: (done: DoneFn) => void, timeout?: number): void;
 ```
 
-*Do* write a single overload with the correct arity:
+*Do* write a single overload using the maximum arity:
 ```ts
+/* OK */
 declare function beforeAll(action: (done: DoneFn) => void, timeout?: number): void;
 ```
 
 *Why*: It's always legal for a callback to disregard a parameter, so there's no need for the shorter overload.
-
+Providing a shorter callback first allows incorrectly-typed functions to be passed in because they match the first overload.
 
 ## Function Overloads
 
@@ -82,6 +104,7 @@ declare function beforeAll(action: (done: DoneFn) => void, timeout?: number): vo
 
 *Don't* put more general overloads before more specific overloads:
 ```ts
+/* WRONG */
 declare function fn(x: any): any;
 declare function fn(x: HTMLElement): number;
 declare function fn(x: HTMLDivElement): string;
@@ -92,6 +115,7 @@ var x = fn(myElem); // x: any, wat?
 
 *Do* sort overloads by putting the more general signatures after more specific signatures:
 ```ts
+/* OK */
 declare function fn(x: HTMLDivElement): string;
 declare function fn(x: HTMLElement): number;
 declare function fn(x: any): any;
@@ -100,12 +124,14 @@ var myElem: HTMLDivElement;
 var x = fn(myElem); // x: string, :)
 ```
 
-*Why*: TypeScript chooses the *first matching overload* when resolving function calls. When an earlier overload is "more general" than a later one, the later one is effectively hidden and cannot be called.
+*Why*: TypeScript chooses the *first matching overload* when resolving function calls.
+When an earlier overload is "more general" than a later one, the later one is effectively hidden and cannot be called.
 
 ### Use Optional Parameters
 
 *Don't* write several overloads that differ only in trailing parameters:
 ```ts
+/* WRONG */
 interface Moment {
     diff(b: MomentComparable): number;
     diff(b: MomentComparable, unitOfTime: string): number;
@@ -115,6 +141,7 @@ interface Moment {
 
 *Do* use optional parameters whenever possible:
 ```ts
+/* OK */
 interface Moment {
     diff(b: MomentComparable, unitOfTime?: string, round?: boolean): number;
 }
@@ -124,8 +151,9 @@ Note that this collapsing should only occur when all overloads have the same ret
 
 *Why*: This is important for two reasons.
 
-TypeScript resolves signature compatibility by seeing if any signature of the target can be invoked with the arguments of the source, *and extraneuous arguments are allowed*.
-This code, for example, exposes a bug only when the signature is correctly written using optionals:
+TypeScript resolves signature compatibility by seeing if any signature of the target can be invoked with the arguments of the source,
+  *and extraneuous arguments are allowed*.
+This code, for example, exposes a bug only when the signature is correctly written using optional parameters:
 ```ts
 function fn(x: (a: string, b: number, c: number) => void) { }
 var x: Moment;
@@ -143,11 +171,11 @@ var x: Moment;
 x.diff(something, someOtherThing ? undefined : "hour");
 ```
 
-
 ### Use Union Types
 
 *Don't* write overloads that differ by type in only one argument position:
 ```ts
+/* WRONG */
 interface Moment {
     utcOffset(): number;
     utcOffset(b: number): Moment;
@@ -157,6 +185,7 @@ interface Moment {
 
 *Do* use union types whenver possible:
 ```ts
+/* OK */
 interface Moment {
     utcOffset(): number;
     utcOffset(b: number|string): Moment;
@@ -176,67 +205,4 @@ function fn(x: number|string) {
 }
 ```
 
-
-# Introduction
-
-The purpose of this guide is to teach you how to write a high-quality definition file.
-This guide is structured by showing an example *usage* and explaining how to write the corresponding declaration.
-
-## A Word on Approach
-
-The best way to write a definition file is by reading the documentation for the underlying library.
-This will allow you to write better names for types and variables, and avoid accidently documenting non-public API surface.
-
-# Definition Files By Example
-
-In each example, we'll begin with either example prose from the documentation, or a code sample of a valid call.
-
-> Prose from the documentation will be formatted like this
-
-and
-
-> `example.code("will be formatted", "like this");`
-
-```ts
-// Definition file code will be formatted like this
-```
-
-## Global variable
-
-> The global variable `foo` contains the number of widgets present
-
-```ts
-/** The number of widgets present */
-declare var foo: number;
-```
-
-## Global function
-
-> `greet('hello, world');`
-
-```ts
-declare function greet(greeting: string): void;
-```
-
-## Object with properties
-
-> `var result = myLib.makeGreeting('hello, world');`
-> `console.log('The computed greeting is:' + result);`
-> `var count = myLib.numberOfGreetings;`
-
-```ts
-declare namespace myLib {
-    function makeGreeting(s: string): string;	
-    let numberOfGreetings: number;
-}
-```
-
-## Overloaded function
-
-> The `getWidget` function accepts a number and return a Widget, or accepts a string and returns a Widget array
-
-```ts
-declare function getWidget(n: number): Widget;
-declare function getWidget(s: string): Widget[];
-```
 

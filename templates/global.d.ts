@@ -2,18 +2,19 @@
 // Project: [~THE PROJECT NAME~]
 // Definitions by: [~YOUR NAME~] <[~A URL FOR YOU~]>
 
-/*~ If this library is callable (e.g. can be invoked as f(3)),
+/*~ If this library is callable (e.g. can be invoked as myLib(3)),
  *~ include those call signatures here.
- *~ Otherwise, delete this section
+ *~ Otherwise, delete this section.
  */
 declare function myLib(a: string): string;
 declare function myLib(a: number): number;
 
-/*~ If you want some types in the *global* namespace,
- *~ add them here. Don't add too many types here --
- *~ consider placing them in the 'namespace' block below.
- *~ Usually, you should delete this section and put
- *~ types in the namespace.
+/*~ If you want the name of this library to be a valid type name,
+ *~ you can do so here.
+ *~
+ *~ For example, this allows us to write 'var x: myLib';
+ *~ Be sure this actually makes sense! If it doesn't, just
+ *~ delete this declaration and add types inside the namespace below.
  */
 interface myLib {
 	name: string;
@@ -21,7 +22,8 @@ interface myLib {
 	extras?: string[];
 }
 
-/*~ If your library has properties exposed on a global variable, place them here.
+/*~ If your library has properties exposed on a global variable,
+ *~ place them here.
  *~ You should also place types (interfaces and type alias) here.
  */
 declare namespace myLib {
@@ -32,6 +34,7 @@ declare namespace myLib {
 	const version: string;
 
 	//~ There's some class we can create via 'let c = new myLib.Cat(42)'
+	//~ Or reference e.g. 'function f(c: myLib.Cat) { ... }
 	class Cat {
 		constructor(n: number);
 
@@ -42,18 +45,18 @@ declare namespace myLib {
 		purr(): void;
 	}
 
-	//~ We can declare a variable 'var s: CatSettings = { weight: 5, name: "Maru" };'
+	//~ We can declare a variable as
+	//~   'var s: myLib.CatSettings = { weight: 5, name: "Maru" };'
 	interface CatSettings {
 		weight: number;
 		name: string;
 		tailLength?: number;
 	}
 
-	//~ We can write 'const v: VetID = 42;' or 'const v: VetID = "bob";'
+	//~ We can write 'const v: myLib.VetID = 42;'
+	//~  or 'const v: myLib.VetID = "bob";'
 	type VetID = string | number;
 
 	//~ We can invoke 'myLib.checkCat(c)' or 'myLib.checkCat(c, v);'
 	function checkCat(c: Cat, s?: VetID);
 }
-
-
