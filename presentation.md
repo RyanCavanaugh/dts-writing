@@ -1,4 +1,3 @@
-
 # So You Want to Write a Definition File
 
 The fine art of crafting a TypeScript definition file
@@ -21,7 +20,7 @@ The fine art of crafting a TypeScript definition file
  * Correct
  * Concise
 
-# Writing a Definition File
+## Writing a Definition File
 
 Write a FINER definition:
 
@@ -31,34 +30,41 @@ Write a FINER definition:
  * Enumerate its properties
  * Review and Refactor
 
-## Familiarize Yourself
+### Familiarize Yourself
 
  * Read the documentation
  * Understand its common patterns
  * Skim the API reference
  * Read the samples
 
-## Structure
+### Structure
 
  * Is this a global library? UMD? Plugin?
  * Get the appropriate template
  * Review structure-specific guidance
  
-## Naming
+### Naming
 
  * Identify reusable type constructs
  * Try to have few anonymous types
  * Use inheritance where it makes sense
+ * Use the same names as the documentatoin
 
-## Enumeration
+### Enumeration
 
  * Find API reference
  * Define each function / property
  * Add new types as you go, if needed
 
-## Review and Refactor
+### Review and Refactor
 
  * Check for common errors
  * Check for duplication
  * Refactor types if needed
- 
+
+## Avoid Common Pitfalls
+
+ * Bad overload ordering
+ * Bad overload structuring
+ * String, Number, Boolean
+ * Unused generic parameters
