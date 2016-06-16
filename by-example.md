@@ -1,16 +1,19 @@
-# Introduction
+# Definition Files by Example
+
+## Introduction
 
 The purpose of this guide is to teach you how to write a high-quality definition file.
-This guide is structured by showing an example *usage* and explaining how to write the corresponding declaration.
+This guide is structured by showing an example *usage* and *documentation*,
+  and explaining how to write the corresponding declaration.
 
-## A Word on Approach
+### A Word on Approach
 
 The best way to write a definition file is by reading the documentation for the underlying library.
 This will allow you to write better names for types and variables, and avoid accidently documenting non-public API surface.
 
-# Definition Files By Example
+### Learning By Example
 
-In each example, we'll begin with either example prose from the documentation, or a code sample of a valid call.
+In each example, we'll begin with example prose from the documentation and a code sample of some valid or invalid usage.
 
 > Prose from the documentation will be formatted like this
 
@@ -22,16 +25,20 @@ and
 // Definition file code will be formatted like this
 ```
 
-## Global variable
+## The Examples
+
+### Global variable
 
 > The global variable `foo` contains the number of widgets present
+
+> `console.log('Half the number of widgets is ' + (foo / 2));
 
 ```ts
 /** The number of widgets present */
 declare var foo: number;
 ```
 
-## Global function
+### Global function
 
 > `greet('hello, world');`
 
@@ -39,7 +46,7 @@ declare var foo: number;
 declare function greet(greeting: string): void;
 ```
 
-## Object with properties
+### Object with properties
 
 > `var result = myLib.makeGreeting('hello, world');`
 > `console.log('The computed greeting is:' + result);`
@@ -52,7 +59,7 @@ declare namespace myLib {
 }
 ```
 
-## Overloaded function
+### Overloaded function
 
 > The `getWidget` function accepts a number and return a Widget, or accepts a string and returns a Widget array
 
