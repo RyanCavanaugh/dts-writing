@@ -15,27 +15,19 @@ This will allow you to write better names for types and variables, and avoid acc
 
 In each example, we'll begin with example prose from the documentation and a code sample of some valid or invalid usage.
 
-> Prose from the documentation will be formatted like this
-
-and
-
-> `example.code("will be formatted", "like this");`
-
-```ts
-// Definition file code will be formatted like this
-```
-
 ## The Examples
 
 ### Global variable
 
-Documentation
+#### Documentation
 > The global variable `foo` contains the number of widgets present
 
-Code
-> `console.log('Half the number of widgets is ' + (foo / 2));`
+#### Code
+```ts
+console.log('Half the number of widgets is ' + (foo / 2));
+```
 
-Declaration
+#### Declaration
 ```ts
 /** The number of widgets present */
 declare var foo: number;
