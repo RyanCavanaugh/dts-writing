@@ -31,7 +31,9 @@ and
 
 > The global variable `foo` contains the number of widgets present
 
-> `console.log('Half the number of widgets is ' + (foo / 2));
+<br/>
+
+> `console.log('Half the number of widgets is ' + (foo / 2));`
 
 ```ts
 /** The number of widgets present */
