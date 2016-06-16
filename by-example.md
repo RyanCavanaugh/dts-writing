@@ -19,15 +19,15 @@ In each example, we'll begin with example prose from the documentation and a cod
 
 ### Global variable
 
-#### Documentation
+*Documentation*
 > The global variable `foo` contains the number of widgets present
 
-#### Code
+*Code*
 ```ts
 console.log('Half the number of widgets is ' + (foo / 2));
 ```
 
-#### Declaration
+*Declaration*
 ```ts
 /** The number of widgets present */
 declare var foo: number;
