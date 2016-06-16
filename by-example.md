@@ -29,10 +29,10 @@ and
 
 ### Global variable
 
+Documentation
 > The global variable `foo` contains the number of widgets present
 
-<br/>
-
+Code
 > `console.log('Half the number of widgets is ' + (foo / 2));`
 
 ```ts
