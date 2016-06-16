@@ -35,6 +35,7 @@ Documentation
 Code
 > `console.log('Half the number of widgets is ' + (foo / 2));`
 
+Declaration
 ```ts
 /** The number of widgets present */
 declare var foo: number;
