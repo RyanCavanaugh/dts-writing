@@ -18,7 +18,8 @@ These examples are ordered in approximately increasing order of complexity.
   - [Global function](#global-function)
   - [Object with Properties](#object-with-properties)
   - [Overloaded function](#overloaded-function)
-  - [Reusable Types](#reusable-types)
+  - [Reusable Types (Global)](#reusable-types-global)
+  - [Classes](#classes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- ^^^^^^^^^^^^^^^^ DO NOT EDIT THIS BLOCK! Run 'doctoc --notitle by-example.md' ! ^^^^^^^^^^^^^^^ -->
@@ -55,6 +56,7 @@ greet('hello, world');
 ```
 
 *Declaration*
+
 Use `declare function` to declare functions.
 ```ts
 declare function greet(greeting: string): void;
@@ -74,7 +76,8 @@ var count = myLib.numberOfGreetings;
 ```
 
 *Declaration*
-Use `declare namespace` to describe things accessed by dotted notation:
+
+Use `declare namespace` to describe types or values accessed by dotted notation.
 ```ts
 declare namespace myLib {
     function makeGreeting(s: string): string;	
@@ -99,7 +102,7 @@ declare function getWidget(n: number): Widget;
 declare function getWidget(s: string): Widget[];
 ```
 
-### Reusable Types
+### Reusable Types (Global)
 
 *Documentation*
 > When specifying a greeting, you must pass a GreetingSettings object.
@@ -117,15 +120,47 @@ greet({
 ```
 
 *Declaration*
+
+Use `interface` to define a type with properties.
 ```ts
-declare function greet(setting: GreetingSettings): void;
 interface GreetingSettings {
   greeting: string;
   duration?: number;
   color?: string;
 }
+declare function greet(setting: GreetingSettings): void;
 ```
 
+### Classes
+
+*Documentation*
+> You can create a greeter by instantiating the `Greeter` object,
+> or create a customized greeter by extending from it.
+
+*Code*
+```ts
+const myGreeter = new Greeter('hello, world');
+myGreeter.greeting = 'howdy';
+myGreeter.showGreeting();
+
+class SpecialGreeter extends Greeter {
+    constructor() {
+        super('Very special greetings');
+    }
+}
+```
+
+*Declaration*
+Use `declare class` to describe a class or classlike object.
+Classes can have properties and methods as well as a constructor.
+```ts
+declare class Greeter {
+    constructor(greeting: string);
+
+    greeting: string;
+    showGreeting(): void;
+}
+```
 
 <!-- Template
 
