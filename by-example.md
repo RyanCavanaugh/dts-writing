@@ -6,21 +6,28 @@ The purpose of this guide is to teach you how to write a high-quality definition
 This guide is structured by showing an example *usage* and *documentation*,
   and explaining how to write the corresponding declaration.
 
-### A Word on Approach
+These examples are ordered in approximately increasing order of complexity.
 
-The best way to write a definition file is by reading the documentation for the underlying library.
-This will allow you to write better names for types and variables, and avoid accidently documenting non-public API surface.
+<!-- vvvvvvvvvvvvvvvv DO NOT EDIT THIS BLOCK! Run 'doctoc' ! vvvvvvvvvvvvvvv -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-### Learning By Example
 
-In each example, we'll begin with example prose from the documentation and a code sample of some valid or invalid usage.
+- [The Examples](#the-examples)
+  - [Global variable](#global-variable)
+  - [Global function](#global-function)
+  - [Object with Properties](#object-with-properties)
+  - [Overloaded function](#overloaded-function)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- ^^^^^^^^^^^^^^^^ DO NOT EDIT THIS BLOCK! Run 'doctoc' ! ^^^^^^^^^^^^^^^ -->
 
 ## The Examples
 
 ### Global variable
 
 *Documentation*
-> The global variable `foo` contains the number of widgets present
+> The global variable `foo` contains the number of widgets present.
 
 *Code*
 ```ts
@@ -35,18 +42,33 @@ declare var foo: number;
 
 ### Global function
 
-> `greet('hello, world');`
+*Documentation*
+> You can invoke the function `greet` with a string to show a greeting to the user.
 
+*Code*
+```
+greet('hello, world');
+```
+
+*Declaration*
 ```ts
 declare function greet(greeting: string): void;
 ```
 
-### Object with properties
+### Object with Properties
 
-> `var result = myLib.makeGreeting('hello, world');`
-> `console.log('The computed greeting is:' + result);`
-> `var count = myLib.numberOfGreetings;`
+*Documentation*
+> The global variable `myLib` has a function `makeGreeting` for creating greetings,
+> and a property `numberOfGreetings` indicating the number of greetings made so far.
 
+*Code*
+```ts
+var result = myLib.makeGreeting('hello, world');
+console.log('The computed greeting is:' + result);
+var count = myLib.numberOfGreetings;
+```
+
+*Declaration*
 ```ts
 declare namespace myLib {
     function makeGreeting(s: string): string;	
@@ -63,3 +85,22 @@ declare function getWidget(n: number): Widget;
 declare function getWidget(s: string): Widget[];
 ```
 
+<!-- Template
+
+### 
+
+*Documentation*
+> 
+
+*Code*
+```ts
+
+```
+
+*Declaration*
+```ts
+
+```
+
+
+-->
