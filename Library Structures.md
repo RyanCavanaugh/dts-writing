@@ -9,8 +9,6 @@ This guide covers how to identify common library patterns,
 Each type of major library structuring pattern has a corresponding file in the `templates` directory.
 You can start with these templates to help you get going faster.
 
-
-
 # Identifying Kinds of Libraries
 
 First, we'll review the kinds of libraries TypeScript definition files can represent.
@@ -76,13 +74,10 @@ Because it's usually easy to turn a global library into a UMD library,
   very few popular libraries are still written in the global style.
 However, libraries that are small and require the DOM (or have *no* dependencies) may still be global.
 
-*TODO: Add some examples anyway*
-
 ### Template
 
 The template file `global.d.ts` defines an example library `myLib`.
 Be sure to read the "Preventing Name Conflicts" footnote.
-
 
 ## *module*
 
@@ -128,10 +123,7 @@ They will rarely have:
 
 ### Examples of Module Libraries
 
-Many popular nodejs libraries are in the module family, such as:
-
- * express
- * TODO: More!
+Many popular nodejs libraries are in the module family, such as `express`, `gulp`, and `request`.
 
 ## *UMD*
 
@@ -150,15 +142,21 @@ console.log(moment.format());
 
 ### Identifying a UMD library
 
-TODO: Link to UMD page
-
-UMD modules check for the existence of a module loader environment.
-This is an easy-to-spot pattern that looks like this:
+(UMD modules)[https://github.com/umdjs/umd] check for the existence of a module loader environment.
+This is an easy-to-spot pattern that looks something like this:
 ```js
-TODO: fill in
-```
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['b'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('b'));
+    } else {
+        root.returnExports = factory(root.b);
+    }
+}(this, function (b) {
+  ```
 
-If you see tests for `typeof require` or `typeof define` in the code of a library,
+If you see tests for `typeof define`, `typeof window`, or `typeof module` in the code of a library,
   especially at the top of the file,
   it's almost always a UMD library.
 
@@ -167,8 +165,8 @@ Documentation for UMD libraries will also often demonstrate a "Using in nodejs" 
 
 ### Examples of UMD libraries
 
- * moment
- * TODO: More!
+Most popular libraries are now available as UMD packages.
+Examples include `jquery`, `moment`, `lodash`, and many more.
 
 ### Template
 

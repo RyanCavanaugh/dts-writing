@@ -26,7 +26,7 @@ These examples are ordered in approximately increasing order of complexity.
 
 ## The Examples
 
-### Global variable
+### Global variables
 
 *Documentation*
 > The global variable `foo` contains the number of widgets present.
@@ -45,7 +45,7 @@ You can also use `declare let` if the variable is block-scoped.
 declare var foo: number;
 ```
 
-### Global function
+### Global functions
 
 *Documentation*
 > You can invoke the function `greet` with a string to show a greeting to the user.
@@ -62,7 +62,7 @@ Use `declare function` to declare functions.
 declare function greet(greeting: string): void;
 ```
 
-### Object with Properties
+### Objects with Properties
 
 *Documentation*
 > The global variable `myLib` has a function `makeGreeting` for creating greetings,
@@ -85,7 +85,7 @@ declare namespace myLib {
 }
 ```
 
-### Overloaded function
+### Overloaded functions
 
 *Documentation*
 > The `getWidget` function accepts a number and return a Widget, or accepts a string and returns a Widget array
@@ -102,7 +102,7 @@ declare function getWidget(n: number): Widget;
 declare function getWidget(s: string): Widget[];
 ```
 
-### Reusable Types (Global)
+### Reusable Types (interfaces)
 
 *Documentation*
 > When specifying a greeting, you must pass a GreetingSettings object.
@@ -129,6 +129,33 @@ interface GreetingSettings {
   color?: string;
 }
 declare function greet(setting: GreetingSettings): void;
+```
+
+### Reusable Types (type aliases)
+
+*Documentation*
+> Anywhere a greeting is expected, you can provide a `string`,
+> a function returning a `string`, or a `Greeter` class.
+
+*Code*
+```ts
+function getGreeting() {
+    return 'howdy';
+}
+class MyGreeter extends Greeter { }
+
+greet('hello');
+greet(getGreeting);
+greet(new MyGreeter());
+```
+
+*Declaration*
+
+You can use a type alias to make a shorthand for a type:
+```ts
+type GreetingLike = string | (() => string) | Greeting;
+
+declare function greet(g: GreetingLike): void;
 ```
 
 ### Classes
