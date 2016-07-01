@@ -203,7 +203,7 @@ For the purposes of writing a definition file, you'll write the same code
 
 Use the `module-plugin.d.ts` template.
 
-### *Global Plugin*
+## *Global Plugin*
 
 A *global plugin* is global code that changes the shape of some global.
 As with *global-modifying modules*, these raise the possibility of runtime conflict.

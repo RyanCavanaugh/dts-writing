@@ -158,6 +158,50 @@ type GreetingLike = string | (() => string) | Greeting;
 declare function greet(g: GreetingLike): void;
 ```
 
+### Organizing Types 
+
+*Documentation*
+> The `greeter` object can log to a file, or display an alert.
+> You can provide LogOptions to `.log(...)` or alert options to `.alert(...)`
+
+*Code*
+```ts
+const g = new Greeter('Hello');
+g.log({ verbose: true });
+g.alert({ modal: false, title: 'Current Greeting' });
+```
+
+*Declaration*
+
+Use namespaces to organize types.
+```ts
+declare namespace GreetingLib {
+    interface LogOptions {
+        verbose?: boolean;
+    }
+    interface AlertOptions {
+        modal: boolean;
+        title?: string;
+        color?: string;
+    }
+}
+```
+
+You can also created nested namespaces in one declaration:
+```ts
+declare namespace GreetingLib.Options {
+    // Refer to via GreetingLib.Options.Log
+    interface Log { 
+        verbose?: boolean;
+    }
+    interface Alert {
+        modal: boolean;
+        title?: string;
+        color?: string;
+    }
+}
+```
+
 ### Classes
 
 *Documentation*
